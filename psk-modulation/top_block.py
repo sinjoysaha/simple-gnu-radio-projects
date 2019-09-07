@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Top Block
-# Generated: Fri Aug 23 20:16:22 2019
+# Generated: Sat Sep  7 19:39:23 2019
 ##################################################
 
 from distutils.version import StrictVersion
@@ -29,8 +29,8 @@ from gnuradio import gr
 from gnuradio import qtgui
 from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
+from grc_gnuradio import blks2 as grc_blks2
 from optparse import OptionParser
-import numpy
 import sip
 import sys
 from gnuradio import qtgui
@@ -133,54 +133,6 @@ class top_block(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_0_1_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0_1.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_1_win)
-        self.qtgui_time_sink_x_0_0_0 = qtgui.time_sink_f(
-        	4096, #size
-        	samp_rate, #samp_rate
-        	"Random Source", #name
-        	1 #number of inputs
-        )
-        self.qtgui_time_sink_x_0_0_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0_0_0.set_y_axis(-1, 1)
-
-        self.qtgui_time_sink_x_0_0_0.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0_0_0.enable_tags(-1, True)
-        self.qtgui_time_sink_x_0_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0_0_0.enable_autoscale(True)
-        self.qtgui_time_sink_x_0_0_0.enable_grid(False)
-        self.qtgui_time_sink_x_0_0_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0_0_0.enable_control_panel(False)
-        self.qtgui_time_sink_x_0_0_0.enable_stem_plot(False)
-
-        if not True:
-          self.qtgui_time_sink_x_0_0_0.disable_legend()
-
-        labels = ['', '', '', '', '',
-                  '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "blue"]
-        styles = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-                   -1, -1, -1, -1, -1]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0_0_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0_0_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0_0_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0_0_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0_0_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0_0_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0_0_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_0_win)
         self.qtgui_time_sink_x_0_0 = qtgui.time_sink_c(
         	4096, #size
         	samp_rate, #samp_rate
@@ -368,35 +320,73 @@ class top_block(gr.top_block, Qt.QWidget):
         self._qtgui_const_sink_x_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_const_sink_x_0_win)
         self.digital_psk_mod_0 = digital.psk.psk_mod(
-          constellation_points=8,
+          constellation_points=2,
           mod_code="gray",
           differential=True,
-          samples_per_symbol=8,
+          samples_per_symbol=2,
           excess_bw=0.1,
+          verbose=False,
+          log=False,
+          )
+        self.digital_psk_demod_0 = digital.psk.psk_demod(
+          constellation_points=2,
+          differential=True,
+          samples_per_symbol=2,
+          excess_bw=0.1,
+          phase_bw=6.28/100.0,
+          timing_bw=6.28/100.0,
+          mod_code="gray",
           verbose=False,
           log=False,
           )
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
-        self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
+        self.blks2_tcp_source_0 = grc_blks2.tcp_source(
+        	itemsize=gr.sizeof_char*1,
+        	addr='127.0.0.1',
+        	port=1234,
+        	server=True,
+        )
+        self.blks2_tcp_sink_0 = grc_blks2.tcp_sink(
+        	itemsize=gr.sizeof_char*1,
+        	addr='127.0.0.1',
+        	port=9989,
+        	server=False,
+        )
+        self.blks2_packet_encoder_0 = grc_blks2.packet_mod_b(grc_blks2.packet_encoder(
+        		samples_per_symbol=2,
+        		bits_per_symbol=1,
+        		preamble='',
+        		access_code='',
+        		pad_for_usrp=False,
+        	),
+        	payload_length=1,
+        )
+        self.blks2_packet_decoder_0 = grc_blks2.packet_demod_b(grc_blks2.packet_decoder(
+        		access_code='',
+        		threshold=-1,
+        		callback=lambda ok, payload: self.blks2_packet_decoder_0.recv_pkt(ok, payload),
+        	),
+        )
         self.band_pass_filter_0 = filter.fir_filter_ccf(1, firdes.band_pass(
         	1, samp_rate, carrier - (filter_width/2), carrier + (filter_width/2), 100, firdes.WIN_HAMMING, 6.76))
         self.analog_sig_source_x_0 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, carrier, 1, 0)
-        self.analog_random_source_x_0 = blocks.vector_source_b(map(int, numpy.random.randint(0, 2, 2048)), True)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_random_source_x_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.analog_random_source_x_0, 0), (self.digital_psk_mod_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.band_pass_filter_0, 0), (self.qtgui_freq_sink_x_0, 1))
-        self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0_0_0, 0))
+        self.connect((self.blks2_packet_decoder_0, 0), (self.blks2_tcp_sink_0, 0))
+        self.connect((self.blks2_packet_encoder_0, 0), (self.digital_psk_mod_0, 0))
+        self.connect((self.blks2_tcp_source_0, 0), (self.blks2_packet_encoder_0, 0))
+        self.connect((self.blocks_multiply_xx_0, 0), (self.digital_psk_demod_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.band_pass_filter_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.digital_psk_demod_0, 0), (self.blks2_packet_decoder_0, 0))
         self.connect((self.digital_psk_mod_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.digital_psk_mod_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.digital_psk_mod_0, 0), (self.qtgui_time_sink_x_0_0, 0))
@@ -413,7 +403,6 @@ class top_block(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.qtgui_time_sink_x_0_0_1.set_samp_rate(self.samp_rate/10)
-        self.qtgui_time_sink_x_0_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
